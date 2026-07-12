@@ -1,0 +1,66 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: xcodegen generate
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build for Simulator (validation)
+        run: |
+          xcodebuild build \
+            -project DrumPadCoach.xcodeproj \
+            -scheme DrumPadCoach \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
+            -quiet
+
+      - name: Build Archive (unsigned)
+        run: |
+          xcodebuild archive \
+            -project DrumPadCoach.xcodeproj \
+            -scheme DrumPadCoach \
+            -archivePath build/DrumPadCoach.xcarchive \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            -quiet
+
+      - name: Extract .app from archive
+        run: |
+          mkdir -p build/ipa
+          cp -r build/DrumPadCoach.xcarchive/Products/Applications/DrumPadCoach.app build/ipa/
+
+      - name: Upload unsigned app
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumPadCoach-unsigned
+          path: build/ipa/DrumPadCoach.app
+          retention-days: 30
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumPadCoach-xcarchive
+          path: build/DrumPadCoach.xcarchive
+          retention-days: 30
