@@ -23,22 +23,8 @@ jobs:
           find . -name '*.plist' -exec sed -i '' 's/\r$//' {} +
           find . -name '*.yml' -exec sed -i '' 's/\r$//' {} +
 
-      - name: Check file encodings
-        run: |
-          echo "=== File type for all Swift files ==="
-          find . -name '*.swift' -exec file {} \;
-          echo ""
-          echo "=== cat -v MetronomeView.swift (first 30 lines) ==="
-          cat -v DrumPadCoach/Features/Metronome/MetronomeView.swift | head -30
-          echo ""
-          echo "=== Hex dump around line 4 ==="
-          head -5 DrumPadCoach/Features/Metronome/MetronomeView.swift | xxd | head -20
-
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_16.4.app
-
-      - name: Show Swift version
-        run: swift --version
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -49,23 +35,13 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Build for Simulator
+      - name: Build for Simulator (validation)
         run: |
           xcodebuild build \
             -project DrumPadCoach.xcodeproj \
             -scheme DrumPadCoach \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
-            2>&1 | tee build_output.log
-        continue-on-error: true
-
-      - name: Show build errors
-        if: always()
-        run: |
-          echo "=== Filtering errors from build output ==="
-          grep -i "error:" build_output.log || echo "No errors found"
-          echo ""
-          echo "=== Full build output (last 200 lines) ==="
-          tail -200 build_output.log
+            -quiet
 
       - name: Build Archive (unsigned)
         run: |
