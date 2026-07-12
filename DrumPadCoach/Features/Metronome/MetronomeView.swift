@@ -232,7 +232,7 @@ struct MetronomeView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Image(systemName: mode.iconName)
-                            .foregroundStyle(.accentColor)
+                            .foregroundStyle(Color.accentColor)
                             .frame(width: 20)
 
                         Text(mode.displayName)
@@ -261,7 +261,7 @@ struct MetronomeView: View {
                 Circle()
                     .fill(viewModel.isPlaying ? Color.red : Color.green)
                     .frame(width: 80, height: 80)
-                    .shadow(color: (viewModel.isPlaying ? .red : .green).opacity(0.4), radius: 8, y: 4)
+                    .shadow(color: (viewModel.isPlaying ? Color.red : Color.green).opacity(0.4), radius: 8, y: 4)
 
                 Image(systemName: viewModel.isPlaying ? "stop.fill" : "play.fill")
                     .font(.system(size: 32))
