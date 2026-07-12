@@ -23,6 +23,15 @@ jobs:
           find . -name '*.plist' -exec sed -i '' 's/\r$//' {} +
           find . -name '*.yml' -exec sed -i '' 's/\r$//' {} +
 
+      - name: Debug MetronomeView
+        run: |
+          echo "=== First 10 lines ==="
+          head -10 DrumPadCoach/Features/Metronome/MetronomeView.swift
+          echo "=== Hex of first 100 bytes ==="
+          xxd -l 100 DrumPadCoach/Features/Metronome/MetronomeView.swift | head -10
+          echo "=== File size ==="
+          wc -c DrumPadCoach/Features/Metronome/MetronomeView.swift
+
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
