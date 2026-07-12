@@ -16,6 +16,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fix line endings
+        run: |
+          git config --global core.autocrlf false
+          find . -name '*.swift' -exec sed -i '' 's/\r$//' {} +
+          find . -name '*.plist' -exec sed -i '' 's/\r$//' {} +
+          find . -name '*.yml' -exec sed -i '' 's/\r$//' {} +
+
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
